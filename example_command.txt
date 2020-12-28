@@ -1,0 +1,1 @@
+python inference.py --input-path="/mnt/HDD_4TB/baidu_crowd/clean_images/images/" --ckpt-path="/home/vividi/matting_test/MODNet/pretrained/modnet_photographic_portrait_matting.ckpt" --output-path="/mnt/HDD_4TB/baidu_crowd/matting/"

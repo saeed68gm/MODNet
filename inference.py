@@ -11,19 +11,20 @@ import torchvision.transforms as transforms
 
 from src.models.modnet import MODNet
 
-
 if __name__ == '__main__':
     # define cmd arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-path', type=str, help='path of input images')
+    parser.add_argument('--input-df', type=str, help='path of input images')
     parser.add_argument('--output-path', type=str, help='path of output images')
     parser.add_argument('--ckpt-path', type=str, help='path of pre-trained MODNet')
     args = parser.parse_args()
 
     # check input arguments
-    if not os.path.exists(args.input_path):
-        print('Cannot find input path: {0}'.format(args.input_path))
-        exit()
+    if args.input_path:
+        if not os.path.exists(args.input_path):
+            print('Cannot find input path: {0}'.format(args.input_path))
+            exit()
     if not os.path.exists(args.output_path):
         print('Cannot find output path: {0}'.format(args.output_path))
         exit()
@@ -48,12 +49,21 @@ if __name__ == '__main__':
     modnet.eval()
 
     # inference images
-    im_names = os.listdir(args.input_path)
+    if args.input_path:
+        im_names = os.listdir(args.input_path)
+    elif args.input_df:
+        import pandas as pd
+        df = pd.read_csv(args.input_df, na_filter=False)
+        im_names = df.img_path.values
     for im_name in im_names:
         print('Process image: {0}'.format(im_name))
 
         # read image
-        im = Image.open(os.path.join(args.input_path, im_name))
+        if args.input_df:
+            im = Image.open(im_name)
+            im_name = os.path.basename(im_name)
+        else:
+            im = Image.open(os.path.join(args.input_path, im_name))
 
         # unify image channels to 3
         im = np.asarray(im)
